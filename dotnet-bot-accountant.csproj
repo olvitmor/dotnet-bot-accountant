@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>dotnet_bot_accountant</RootNamespace>
-    <UserSecretsId>cf7e3553-b660-4d22-ae8a-cf388fb719bc</UserSecretsId>
+    <UserSecretsId>93201208-25a5-453b-a854-b08b8baeacd1</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>.</DockerfileContext>
   </PropertyGroup>
