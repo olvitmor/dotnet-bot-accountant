@@ -1,3 +1,4 @@
+using dotnet_bot_accountant.Engine.Messenger;
 using dotnet_bot_accountant.Extensions;
 using Serilog;
 using Serilog.Events;
@@ -10,14 +11,14 @@ public class Program
     {
         Paths.MakePaths();
 
-        var builder = WebApplication.CreateBuilder(args);
-
         LogExtensions.SetupLogger();
+
+        var builder = WebApplication.CreateBuilder(args);
 
         builder.Host.UseSerilog();
 
         // Add services to the container.
-        builder.Services.AddControllersWithViews();
+        builder.Services.AddControllersWithViews().AddNewtonsoftJson();
 
         var app = builder.Build();
 
@@ -39,6 +40,8 @@ public class Program
         app.MapControllerRoute(
             name: "default",
             pattern: "{controller=Home}/{action=Index}/{id?}");
+
+        BotManager.Init();
 
         app.Run();
     }
