@@ -1,5 +1,7 @@
-﻿using dotnet_bot_accountant.Models;
+﻿using dotnet_bot_accountant.Extensions;
+using dotnet_bot_accountant.Models;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 using System.Diagnostics;
 
 namespace dotnet_bot_accountant.Controllers
@@ -20,6 +22,7 @@ namespace dotnet_bot_accountant.Controllers
 
         public IActionResult Privacy()
         {
+            _logger.LogInformation("Privacy page");
             return View();
         }
 
