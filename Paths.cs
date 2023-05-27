@@ -14,6 +14,8 @@ namespace dotnet_bot_accountant
             LogFolder = Path.Combine(CurrentPath, "logs");
         }
 
+        public static string GetSettingsFilePath() => Path.Combine(CurrentPath, "Settings.xml");
+
         public static string GetLogFilePath() => Path.Combine(LogFolder, "log-.txt");
     }
 }

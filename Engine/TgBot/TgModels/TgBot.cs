@@ -1,5 +1,8 @@
-﻿using dotnet_bot_accountant.Extensions;
+﻿using dotnet_bot_accountant.Engine.Enums;
+using dotnet_bot_accountant.Engine.TgBot.TgCommands;
+using dotnet_bot_accountant.Extensions;
 using Serilog;
+using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
@@ -7,31 +10,49 @@ using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace dotnet_bot_accountant.Engine.Messenger.Models;
+namespace dotnet_bot_accountant.Engine.TgBot.TgModels;
 
 public class TelegramBot : IDisposable
 {
-    #region Fields
-
-    private readonly string _token;
-
-    private TelegramBotClient _client;
-
+    #region Properties
+    public string Token { get; private set; }
     public Telegram.Bot.Types.User BotInfo { get; private set; }
 
+    public BotState State { get; private set; }
+    #endregion
+
+    #region Fields
     private CancellationTokenSource _receiveTokenSource;
+    private readonly Serilog.ILogger _logger = Log.Logger;
+    private TelegramBotClient _client;
+    private ConcurrentDictionary<string, TgCommand> _commands = new ConcurrentDictionary<string, TgCommand>();
 
     #endregion
 
     #region Constructors
     public TelegramBot(string token)
     {
-        _token = token;
+        Token = token;
         _client = new TelegramBotClient(token);
+        State = BotState.Initialized;
+        MakeCommands();
     }
     #endregion
 
     #region Methods
+
+    private void MakeCommands()
+    {
+        var commands = new List<TgCommand>()
+        {
+            new CommandStart()
+        };
+
+        foreach(var cmd in commands)
+        {
+            _commands[cmd.Name] = cmd;
+        }
+    }
 
     public void StartReceive()
     {
@@ -42,13 +63,15 @@ public class TelegramBot : IDisposable
             AllowedUpdates = Array.Empty<UpdateType>()
         };
 
-        Log.Information("starting bot");
+        _logger.LogInfo("starting telegram bot ...");
 
         _client.StartReceiving(
             updateHandler: HandleUpdateAsync,
             pollingErrorHandler: HandlePollingErrorAsync,
             receiverOptions: options,
             cancellationToken: _receiveTokenSource.Token);
+
+        State = BotState.Running;
     }
 
     public void StopReceive()
@@ -57,28 +80,27 @@ public class TelegramBot : IDisposable
         {
             _receiveTokenSource.Cancel();
 
-            Log.Information("bot stopped");
+            _logger.Information("bot stopped");
+
+            State = BotState.Stopped;
         }
     }
 
     private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
-        // Only process Message updates: https://core.telegram.org/bots/api#message
+        if (cancellationToken.IsCancellationRequested)
+            return;
+
         if (update.Message is not { } message)
             return;
-        // Only process text messages
+
         if (message.Text is not { } messageText)
             return;
 
-        var chatId = message.Chat.Id;
-
-        Log.Logger.LogInfo($"Received a '{messageText}' message in chat {chatId}.");
-
-        // Echo received message text
-        Message sentMessage = await botClient.SendTextMessageAsync(
-            chatId: chatId,
-            text: "You said:\n" + messageText,
-            cancellationToken: cancellationToken);
+        if (_commands.TryGetValue(messageText, out var command))
+        {
+            await command.Handle(message, botClient, update);
+        }
     }
 
     private Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
@@ -104,6 +126,7 @@ public class TelegramBot : IDisposable
     public void Dispose()
     {
         _client?.CloseAsync().Wait();
+        State = BotState.Disposed;
     }
 
     #endregion

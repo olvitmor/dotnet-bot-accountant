@@ -1,4 +1,5 @@
-using dotnet_bot_accountant.Engine.Messenger;
+using dotnet_bot_accountant.Engine.Managers;
+using dotnet_bot_accountant.Engine.TgBot;
 using dotnet_bot_accountant.Extensions;
 using Serilog;
 using Serilog.Events;
@@ -13,9 +14,15 @@ public class Program
 
         LogExtensions.SetupLogger();
 
+        SettingsManager.Init();
+
+        TgBotManager.Init();
+
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Host.UseSerilog();
+
+        builder.WebHost.UseUrls(Shared.Settings.Service.Url);
 
         // Add services to the container.
         builder.Services.AddControllersWithViews().AddNewtonsoftJson();
@@ -30,7 +37,7 @@ public class Program
             app.UseHsts();
         }
 
-        app.UseHttpsRedirection();
+        //app.UseHttpsRedirection();
         app.UseStaticFiles();
 
         app.UseRouting();
@@ -40,8 +47,6 @@ public class Program
         app.MapControllerRoute(
             name: "default",
             pattern: "{controller=Home}/{action=Index}/{id?}");
-
-        BotManager.Init();
 
         app.Run();
     }
