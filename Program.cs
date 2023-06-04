@@ -1,3 +1,4 @@
+using dotnet_bot_accountant.Engine.Interfaces;
 using dotnet_bot_accountant.Engine.Managers;
 using dotnet_bot_accountant.Engine.TgBot;
 using dotnet_bot_accountant.Extensions;
@@ -18,14 +19,29 @@ public class Program
 
         TgBotManager.Init();
 
-        var builder = WebApplication.CreateBuilder(args);
+#if DEBUG
+        var contentRootPath = Path.Combine(Paths.CurrentPath, "..", "..", "..");
+#else
+        var contentRootPath = Paths.CurrentPath;
+#endif
+        var builder = WebApplication.CreateBuilder(new WebApplicationOptions()
+        {
+            ContentRootPath = contentRootPath
+        });
 
         builder.Host.UseSerilog();
 
         builder.WebHost.UseUrls(Shared.Settings.Service.Url);
 
         // Add services to the container.
-        builder.Services.AddControllersWithViews().AddNewtonsoftJson();
+        builder.Services
+            .AddControllersWithViews()
+            .AddNewtonsoftJson()
+            .AddRazorRuntimeCompilation();
+
+        builder.Services.AddSingleton<IUserManager, UserManager>();
+        builder.Services.AddSingleton<IAuthManager, AuthManager>();
+        builder.Services.AddSingleton<IBlocksManager, BlocksManager>();
 
         var app = builder.Build();
 
@@ -37,7 +53,6 @@ public class Program
             app.UseHsts();
         }
 
-        //app.UseHttpsRedirection();
         app.UseStaticFiles();
 
         app.UseRouting();

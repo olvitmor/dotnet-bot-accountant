@@ -5,11 +5,5 @@ namespace dotnet_bot_accountant;
 
 public class Shared
 {
-    public static XmlSettings Settings
-    {
-        get
-        {
-            return SettingsManager.Root;
-        }
-    }
+    public static XmlSettings Settings => SettingsManager.Root;
 }

@@ -1,4 +1,5 @@
 ﻿using dotnet_bot_accountant.Engine.Enums;
+using System.Security.Cryptography.X509Certificates;
 using System.Xml.Serialization;
 
 namespace dotnet_bot_accountant.Engine.Settings;
@@ -81,6 +82,23 @@ public class XmlSettings
                 return $"http://{Host}:{Port}";
             }
         }
+
+        public ServiceSecurity Security { get; set; }
+    }
+
+    public class ServiceSecurity
+    {
+        [XmlAttribute]
+        public bool UseBlocks { get; set; } = true;
+
+        [XmlAttribute]
+        public int BlockAfterAttempt { get; set; } = 3;
+
+        [XmlAttribute]
+        public int MaxAttemtps { get; set; } = 10;
+
+        [XmlAttribute]
+        public int BlockPerAttempt { get; set; } = 300_000;// ms
     }
 
     [XmlRoot("App")]
