@@ -1,9 +1,7 @@
 ﻿using dotnet_bot_accountant.Engine.Enums;
-using dotnet_bot_accountant.Engine.Managers;
 using dotnet_bot_accountant.Engine.TgBot.TgModels;
 using dotnet_bot_accountant.Extensions;
 using Serilog;
-using Telegram.Bot;
 
 namespace dotnet_bot_accountant.Engine.TgBot;
 

@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
 
-namespace dotnet_bot_accountant.Engine.Managers;
+namespace dotnet_bot_accountant.Managers;
 
 public class ProtectionManager
 {
@@ -29,6 +29,6 @@ public class ProtectionManager
     private static bool IsBase64String(string base64)
     {
         base64 = base64.Trim();
-        return (base64.Length % 4 == 0) && Regex.IsMatch(base64, @"^[a-zA-Z0-9\+/]*={0,3}$", RegexOptions.None);
+        return base64.Length % 4 == 0 && Regex.IsMatch(base64, @"^[a-zA-Z0-9\+/]*={0,3}$", RegexOptions.None);
     }
 }

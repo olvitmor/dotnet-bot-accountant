@@ -1,8 +1,10 @@
 ﻿using dotnet_bot_accountant.Engine.Enums;
+using dotnet_bot_accountant.Managers;
+using Newtonsoft.Json;
 using System.Security.Cryptography.X509Certificates;
 using System.Xml.Serialization;
 
-namespace dotnet_bot_accountant.Engine.Settings;
+namespace dotnet_bot_accountant.Xml;
 
 [XmlRoot("Root")]
 public class XmlSettings
@@ -36,10 +38,10 @@ public class XmlSettings
     {
         [XmlAttribute]
         public DbType Type { get; set; }
-        
+
         [XmlAttribute]
         public string Host { get; set; }
-        
+
         [XmlAttribute]
         public int Port { get; set; }
 
@@ -65,14 +67,7 @@ public class XmlSettings
         [XmlAttribute]
         public int Port { get; set; } = 5001;
 
-        [XmlAttribute]
-        public string UserName { get; set; } = "olvitmor";
-
-        [XmlAttribute("Password")]
-        public string PasswordProtected { get; set; }
-
-        [XmlIgnore]
-        public string Password { get; set; }
+        public List<ServiceUser> Users { get; set; } = new List<ServiceUser>();
 
         [XmlIgnore]
         public string Url
@@ -84,6 +79,21 @@ public class XmlSettings
         }
 
         public ServiceSecurity Security { get; set; }
+    }
+
+    public class ServiceUser
+    {
+        [XmlAttribute]
+        public string Id { get; set; } = IdManager.NewId;
+
+        [XmlAttribute]
+        public string Username { get; set; }
+
+        [XmlAttribute("Password"), JsonIgnore]
+        public string PasswordProtected { get; set; }
+
+        [XmlIgnore, JsonIgnore]
+        public string Password { get; set; }
     }
 
     public class ServiceSecurity
@@ -99,6 +109,9 @@ public class XmlSettings
 
         [XmlAttribute]
         public int BlockPerAttempt { get; set; } = 300_000;// ms
+
+        [XmlIgnore, JsonIgnore]
+        public string PassPhrase { get; } = "olvitmor:1997";
     }
 
     [XmlRoot("App")]

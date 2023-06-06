@@ -1,11 +1,11 @@
-﻿using dotnet_bot_accountant.Engine.Interfaces;
-using dotnet_bot_accountant.Extensions;
+﻿using dotnet_bot_accountant.Extensions;
+using dotnet_bot_accountant.Interfaces;
 using Serilog;
 using System.Xml.Serialization;
 
-namespace dotnet_bot_accountant.Engine.Managers;
+namespace dotnet_bot_accountant.Managers;
 
-public class XmlManager<T>: IXmlManager<T> where T : class
+public class XmlManager<T> : IXmlManager<T> where T : class
 {
     private readonly Serilog.ILogger _logger = Log.Logger;
     private readonly XmlSerializer _xmlSerializer = new XmlSerializer(typeof(T));
@@ -31,7 +31,7 @@ public class XmlManager<T>: IXmlManager<T> where T : class
 
     public bool ReadXml(string path, out T obj)
     {
-        obj = default(T);
+        obj = default;
         try
         {
             using (TextReader stream = new StreamReader(path))

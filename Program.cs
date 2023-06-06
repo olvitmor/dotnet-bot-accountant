@@ -1,9 +1,8 @@
-using dotnet_bot_accountant.Engine.Interfaces;
-using dotnet_bot_accountant.Engine.Managers;
 using dotnet_bot_accountant.Engine.TgBot;
 using dotnet_bot_accountant.Extensions;
+using dotnet_bot_accountant.Interfaces;
+using dotnet_bot_accountant.Managers;
 using Serilog;
-using Serilog.Events;
 
 namespace dotnet_bot_accountant;
 
@@ -16,8 +15,6 @@ public class Program
         LogExtensions.SetupLogger();
 
         SettingsManager.Init();
-
-        TgBotManager.Init();
 
 #if DEBUG
         var contentRootPath = Path.Combine(Paths.CurrentPath, "..", "..", "..");
@@ -62,6 +59,8 @@ public class Program
         app.MapControllerRoute(
             name: "default",
             pattern: "{controller=Home}/{action=Index}/{id?}");
+
+        TgBotManager.Init();
 
         app.Run();
     }

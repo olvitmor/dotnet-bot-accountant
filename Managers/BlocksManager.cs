@@ -1,8 +1,8 @@
-﻿using dotnet_bot_accountant.Engine.Interfaces;
-using dotnet_bot_accountant.Engine.Models;
+﻿using dotnet_bot_accountant.Interfaces;
+using dotnet_bot_accountant.Models;
 using System.Net;
 
-namespace dotnet_bot_accountant.Engine.Managers;
+namespace dotnet_bot_accountant.Managers;
 
 public class BlocksManager : IBlocksManager
 {

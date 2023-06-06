@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace dotnet_bot_accountant.Models;
 
-public class ServiceLoginModel
+public class LoginModel
 {
     [Required]
     [FromForm(Name = "username")]

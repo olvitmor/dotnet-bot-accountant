@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace dotnet_bot_accountant.Engine.Interfaces
+namespace dotnet_bot_accountant.Interfaces
 {
     public interface IBlocksManager
     {

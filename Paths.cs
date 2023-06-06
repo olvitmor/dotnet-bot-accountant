@@ -8,13 +8,27 @@ namespace dotnet_bot_accountant
 
         public static string CurrentPath { get; private set; }
 
+        public static string AppFolder { get; private set; }
+
         public static void MakePaths()
         {
             CurrentPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            LogFolder = Path.Combine(CurrentPath, "logs");
+            AppFolder = Path.Combine(CurrentPath, "app");
+            LogFolder = Path.Combine(AppFolder, "logs");
+
+            MakeFolders();
         }
 
-        public static string GetSettingsFilePath() => Path.Combine(CurrentPath, "Settings.xml");
+        private static void MakeFolders()
+        {
+            if (!Directory.Exists(AppFolder))
+                Directory.CreateDirectory(AppFolder);
+
+            if (!Directory.Exists(LogFolder))
+                Directory.CreateDirectory(LogFolder);
+        }
+
+        public static string GetSettingsFilePath() => Path.Combine(AppFolder, "Settings.xml");
 
         public static string GetLogFilePath() => Path.Combine(LogFolder, "log-.txt");
     }

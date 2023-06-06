@@ -1,7 +1,7 @@
-﻿using dotnet_bot_accountant.Engine.Settings;
+﻿using dotnet_bot_accountant.Xml;
 using System.Net;
 
-namespace dotnet_bot_accountant.Engine.Models
+namespace dotnet_bot_accountant.Models
 {
     public class BlockModel
     {
@@ -30,7 +30,7 @@ namespace dotnet_bot_accountant.Engine.Models
         #region Methods
 
         private double GetBlockMinutes(double remained) => Math.Round(remained / 60_000);
-        
+
         public bool RaiseBadAttempt(out string message)
         {
             LastAttemptTs = DateTime.UtcNow;
@@ -74,7 +74,7 @@ namespace dotnet_bot_accountant.Engine.Models
 
             var allowed = !_isBlocked || IsBlockTimeElapsed(out remained);
 
-            message = (allowed) ? "" : $"Blocked. {GetBlockMinutes(remained)} remained";
+            message = allowed ? "" : $"Blocked. {GetBlockMinutes(remained)} remained";
 
             return allowed;
         }
@@ -92,11 +92,11 @@ namespace dotnet_bot_accountant.Engine.Models
 
             var elapsed = diff.TotalMilliseconds >= _blockMs;
 
-            remained = (elapsed) ? 0 : _blockMs - diff.TotalMilliseconds;
+            remained = elapsed ? 0 : _blockMs - diff.TotalMilliseconds;
 
-            _attemptsLeft = (elapsed) ? _settings.BlockAfterAttempt : _attemptsLeft;
+            _attemptsLeft = elapsed ? _settings.BlockAfterAttempt : _attemptsLeft;
 
-            _isBlocked = (elapsed) ? false : _isBlocked;
+            _isBlocked = elapsed ? false : _isBlocked;
 
             return elapsed;
         }

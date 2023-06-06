@@ -1,5 +1,5 @@
-﻿using dotnet_bot_accountant.Engine.Managers;
-using dotnet_bot_accountant.Engine.Settings;
+﻿using dotnet_bot_accountant.Managers;
+using dotnet_bot_accountant.Xml;
 
 namespace dotnet_bot_accountant;
 

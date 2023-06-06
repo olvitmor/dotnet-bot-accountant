@@ -1,4 +1,4 @@
-﻿namespace dotnet_bot_accountant.Engine.Interfaces;
+﻿namespace dotnet_bot_accountant.Interfaces;
 
 public interface IXmlManager<T> where T : class
 {

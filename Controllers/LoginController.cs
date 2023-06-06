@@ -1,4 +1,4 @@
-﻿using dotnet_bot_accountant.Engine.Interfaces;
+﻿using dotnet_bot_accountant.Interfaces;
 using dotnet_bot_accountant.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -36,9 +36,9 @@ public class LoginController : Controller
 
     [AllowAnonymous]
     [HttpPost, ValidateAntiForgeryToken]
-    public IActionResult Login(ServiceLoginModel authData)
+    public IActionResult Login(LoginModel authData)
     {
-        if (!_userManager.TryLoginUser(HttpContext, authData.Username, authData.Password, out string message))
+        if (!_userManager.TryLoginUser(HttpContext, authData, out string message))
         {
             ViewBag.ErrorMessage = message;
 

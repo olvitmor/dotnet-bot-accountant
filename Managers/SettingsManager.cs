@@ -1,9 +1,9 @@
-﻿using dotnet_bot_accountant.Engine.Interfaces;
-using dotnet_bot_accountant.Engine.Settings;
-using dotnet_bot_accountant.Extensions;
+﻿using dotnet_bot_accountant.Extensions;
+using dotnet_bot_accountant.Interfaces;
+using dotnet_bot_accountant.Xml;
 using Serilog;
 
-namespace dotnet_bot_accountant.Engine.Managers;
+namespace dotnet_bot_accountant.Managers;
 
 public class SettingsManager
 {
@@ -17,21 +17,30 @@ public class SettingsManager
 
     private static string _path;
 
+    private static string _prefix = "[xml]";
+
     #endregion
 
     #region Methods
-    
+
     public static void Init()
     {
+        _path = Paths.GetSettingsFilePath();
         ApplySettings("on startup");
     }
 
     public static void ApplySettings(string reason)
     {
-        _path = Paths.GetSettingsFilePath();
         ReadXml();
 
-        _logger.LogInfo($"settings applied. [{reason}]");
+        _logger.LogInfo($"{_prefix} settings applied. [{reason}]");
+    }
+
+    public static void SaveSettings(string reason)
+    {
+        WriteXml();
+
+        _logger.LogInfo($"{_prefix} settings saved. [{reason}]");
     }
 
     private static void ReadXml()
@@ -43,8 +52,6 @@ public class SettingsManager
             Root = _root;
             AfterRead();
         }
-
-        WriteXml();
     }
 
     private static void WriteXml()
@@ -82,16 +89,17 @@ public class SettingsManager
 
     private static void ProtectData()
     {
-        Root.Service.PasswordProtected = ProtectionManager.EncryptString(Root.Service.Password);
-        Root.Database.PasswordProtected = ProtectionManager.EncryptString(Root.Service.Password);
         Root.TgBot.TokenProtected = ProtectionManager.EncryptString(Root.TgBot.Token);
+        foreach(var usr in Root.Service.Users)
+            usr.PasswordProtected = ProtectionManager.EncryptString(usr.PasswordProtected);
     }
 
     private static void UnprotectData()
     {
-        Root.Service.Password = ProtectionManager.DecryptString(Root.Service.PasswordProtected);
-        Root.Database.Password = ProtectionManager.DecryptString(Root.Service.PasswordProtected);
         Root.TgBot.Token = ProtectionManager.DecryptString(Root.TgBot.TokenProtected);
+        
+        foreach(var usr in Root.Service.Users)
+            usr.Password = ProtectionManager.DecryptString(usr.PasswordProtected);
     }
 
     public static void ChangeXmlManager(IXmlManager<XmlSettings> xmlManager)
